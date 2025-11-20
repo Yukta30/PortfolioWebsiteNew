@@ -4684,10 +4684,7 @@ input:focus, textarea:focus{outline:none; box-shadow:0 0 0 4px rgba(139,92,246,.
 
 /* ------------------ Responsive ------------------ */
 @media (max-width: 1040px){
-  #page-academics .a-row{
-    grid-template-columns: 1fr;
-    gap:16px; padding:18px; margin-inline:16px;
-  }
+
   #page-academics .vtimeline{ display:none; }
   #page-academics .a-row > .vt-node{ display:none; }
   #page-academics .activity-card > ul:first-of-type{ grid-template-columns:1fr; }
@@ -6257,61 +6254,97 @@ input:focus, textarea:focus{outline:none; box-shadow:0 0 0 4px rgba(139,92,246,.
 
 
 
-/* ===== Academics overlap fix + right-docked layout (≤1040px) ===== */
+/* ===== Scope all tablet/phone tweaks to #academics only ===== */
+
+/* Layout + right-dock only for Academics (≤1040px) */
+/* === Academics @ ≤1040px: keep outer panel full width,
+       only nudge the Activities column to the right === */
 @media (max-width: 1040px){
-  /* 1) Make sure Academics sits in normal flow and clears the section above */
-  #academics{
-    position: relative !important;
-    z-index: 1 !important;
-    margin-top: clamp(18px, 3vw, 28px) !important;  /* push it down a bit */
-    overflow: visible !important;
+
+/* 1) Make the right column actually wide */
+  .a-row {
+    display: grid !important;
+    grid-template-columns: minmax(0,1fr) 40px minmax(520px, 1fr) !important; /* study | connector | activity */
+    column-gap: 28px !important;
+    align-items: start;
   }
+  .a-row .study-card { grid-column: 1 !important; }
+  .a-row .connector  { grid-column: 2 !important; }
+  .a-row .activity   { grid-column: 3 !important; }
 
-  /* If the previous section has a sticky/rounded bottom, give scroll offset */
-  #about{ scroll-margin-bottom: 80px; }
-
-  /* 2) Move the Academics inner content to the RIGHT and reduce width */
-  #academics .a-grid,
-  #academics .section-inner,
-  #academics .container{
-    max-width: 760px;            /* narrower content */
-    margin-left: auto;           /* align to the RIGHT */
-    margin-right: 0;
-  }
-
-  /* 3) Neutralize any absolute/translated items that cause overlap */
-  #academics .a-grid > *,
-  #academics .a-row,
-  #academics .activity-card{
-    position: relative !important;
-    top: auto !important;
-    transform: none !important;
-    margin-left: 3px !important;
-  }
-
-  /* 4) Ensure the academics header band doesn't float over the section above */
-  #academics .section-head{
-    position: relative;
-    z-index: 2;
-    padding-inline: clamp(12px, 3vw, 20px);
-  }
-
-  /* 5) Keep any background video/ink behind content so it can't cover cards */
-  #academics > .bg-video__media{
-    position: absolute !important;
-    inset: 0 !important;
+  /* kill any width caps on the card/column */
+  .a-row .activity,
+  .a-row .activity-card {
     width: 100% !important;
-    height: 100% !important;
-    object-fit: cover !important;
-    z-index: 0 !important;
-    pointer-events: none !important;
+    max-width: none !important;
+    flex: 1 1 auto !important;
+    margin-left: 2px !important;
+  }
+
+  /* 2) Make each chip span the full card width */
+  .activity-card .chip-points,
+  .activity-card .chip-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* one long column */
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .activity-card .chip-points li,
+  .activity-card .chip {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;      /* stretch horizontally */
+    min-height: 60px !important;
+    padding: 14px 18px !important;
+    border-radius: 14px !important;
+    white-space: normal !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* keep the emoji/icon at the start */
+  .activity-card .chip::before {
+    content: attr(data-ic);
+    margin-right: 12px;
+    flex: 0 0 auto;
+  }
+
+}
+
+
+/* Extra safety gutter on narrow tablets so nothing kisses the edge */
+@media (max-width: 820px){
+  #academics .a-row{
+    grid-template-columns: 1fr min(480px, 48vw) !important;
   }
 }
+
+
+/* Background media strictly behind Academics content; phones may hide it */
+@media (max-width: 900px){
+  #academics > .bg-video__media{
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:0; pointer-events:none;
+  }
+}
+@media (max-width: 600px){
+  #academics > .bg-video__media{ display:none !important; }
+}
+
+/* Center the section header row for Academics only (optional) */
+@media (max-width: 900px){
+  #academics .section-head{
+    display:grid; grid-template-columns:1fr; row-gap:10px; justify-items:center;
+    text-align:center;
+  }
+}
+
 
 /* Phones: if the visual is heavy, hide it */
 @media (max-width: 600px){
   #academics > .bg-video__media{ display: none !important; }
-}
+
 
  #academics .a-row{
     display: grid !important;
@@ -6323,13 +6356,14 @@ input:focus, textarea:focus{outline:none; box-shadow:0 0 0 4px rgba(139,92,246,.
   #academics .activity-card{
     width: min(760px, 94vw) !important;  /* reduce width a bit */
     justify-self: end !important;        /* grid: push to right */
-    margin-left: auto !important;        /* fallback if parent becomes flex */
+    margin-left: -100px !important;        /* fallback if parent becomes flex */
     transform: none !important;          /* kill any translate keeping it left */
   }
 
   /* If a left “rail/timeline” is part of the same row, keep it from forcing space */
   #academics .rail, 
   #academics .timeline{ display: none !important; }
+}
 
 
 
@@ -6382,11 +6416,10 @@ input:focus, textarea:focus{outline:none; box-shadow:0 0 0 4px rgba(139,92,246,.
   margin-inline: auto;        /* <-- centers the 90%-wide block */
   padding-left: 0;
 }
+
 }
 
 
-
-  
 
   
 
