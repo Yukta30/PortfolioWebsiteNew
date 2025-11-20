@@ -644,15 +644,19 @@
     <section id="contact" class="card section-card">
       <h2>GET IN TOUCH</h2>
       <div class="contact-wrap">
-        <form action="https://formspree.io/f/yourFormId" method="POST">
-          <label for="name">Your Name</label>
-          <input id="name" name="name" placeholder="Jane Doe" required />
-          <label for="email">Your Email</label>
-          <input id="email" type="email" name="email" placeholder="jane@company.com" required />
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="5" placeholder="Tell me about your project…" required></textarea>
-          <button class="btn" type="submit">Send Message</button>
-        </form>
+        <form id="contact-form" novalidate>
+  <label for="name">Your Name</label>
+  <input id="name" name="name" required />
+
+  <label for="email">Your Email</label>
+  <input id="email" name="email" type="email" required />
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" rows="5" required></textarea>
+
+  <button type="submit">Send Message</button>
+  <p id="contact-status" aria-live="polite"></p>
+</form>
         <div class="card pad">
           <p><strong>Elsewhere</strong></p>
           <p class="desc">Connect with me on:</p>
