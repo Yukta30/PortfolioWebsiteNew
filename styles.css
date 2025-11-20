@@ -5609,24 +5609,786 @@ input:focus, textarea:focus{outline:none; box-shadow:0 0 0 4px rgba(139,92,246,.
 }
 
 
+/* ========= Small-screen fixes ONLY (laptop untouched) ========= */
+
+/* Tablets & small screens (≤900px): stack hero and make icons scroll */
+@media (max-width: 900px){
+  /* Prevent rounded wrapper from clipping content only on small screens */
+  .hero, .hero-surface, .hero .panel{
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding-inline: clamp(14px, 4vw, 28px);
+    padding-bottom: clamp(18px, 4vw, 32px);
+  }
+
+  /* One-column hero layout */
+  .hero-main{
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    row-gap: 20px;
+  }
+
+  /* Keep the background video ON at this size */
+  .hero-video, .bg-video__media{ display: block !important; }
+  .bg-video__media{
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  /* Card width safe for narrow viewports */
+  .hero .banner, .hero-card, .hero .intro-card{
+    width: 100%;
+    max-width: 92vw;
+    margin-inline: auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Icon row: horizontal scroll strip */
+  .hero-icons{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 14px;
+    padding-inline: 8px;
+    scrollbar-width: none;
+    position: relative; z-index: 2;
+  }
+  .hero-icons::-webkit-scrollbar{ display: none; }
+  .ic{ flex: 0 0 auto; width: 120px; }
+  .ic .circle{ width: 52px; height: 52px; }
+}
+
+/* Phones (≤600px): hide heavy video, tighten type */
+@media (max-width: 600px){
+  .hero-video, .bg-video__media{ display: none !important; }
+
+  .hero h1{ font-size: clamp(1.25rem, 5.2vw, 1.6rem); }
+  .hero p{ font-size: clamp(.95rem, 4vw, 1.05rem); }
+}
+
+/* Very small phones (≤420px): a touch more tightening */
+@media (max-width: 420px){
+  .ic{ width: 104px; }
+  .ic .circle{ width: 48px; height: 48px; }
+}
+
+
+
+/* =========================
+   Small-screen clipping fixes ONLY
+   (Laptop/desktop unchanged)
+   ========================= */
+
+/* Tablets & down */
+@media (max-width: 900px){
+
+  /* 1) Never crop hero content on small screens */
+  .hero,
+  .hero .panel,
+  .hero-surface,
+  .section-hero,
+  .glass,
+  .card.hero-card{
+    overflow: visible !important;         /* was causing the cut-off */
+    height: auto !important;
+    min-height: auto !important;
+  }
+
+  /* If a mask/clip-path is used for the rounded band, disable on small screens */
+  .hero,
+  .hero-surface,
+  .section-hero{
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    clip-path: none !important;
+  }
+
+  /* 2) Background video: keep it behind content and full-cover */
+  .bg-video__wrap,
+  .hero-video{ position: absolute; inset: 0; z-index: 0; }
+  .bg-video__media{
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block !important;            /* don’t disappear at tablet widths */
+  }
+
+  /* 3) Stack hero into a single column and add safe gutters */
+  .hero-main{
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: flex-start;               /* avoid vertical squish */
+    row-gap: 20px;
+    padding-inline: clamp(14px, 4vw, 28px);
+    padding-bottom: clamp(18px, 4vw, 32px);/* prevents rounded bottom from clipping icons */
+  }
+
+  /* 4) Keep the banner/card from over-expanding */
+  .hero .banner,
+  .hero-card,
+  .intro-card{
+    width: 100%;
+    max-width: 92vw;                       /* readable width on small screens */
+    margin-inline: auto;
+    position: relative; z-index: 2;
+  }
+
+  /* 5) Icon row: one horizontal, scrollable strip (no wrap = no clipping) */
+  .hero-icons{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;                       /* let icons extend, not clip */
+    gap: 14px;
+    padding-inline: 8px;
+    scrollbar-width: none;
+    position: relative; z-index: 2;
+  }
+  .hero-icons::-webkit-scrollbar{ display: none; }
+  .ic{ flex: 0 0 auto; width: 120px; }
+  .ic .circle{ width: 52px; height: 52px; }
+
+  /* 6) If a sticky navbar overlaps, give the hero a top offset only on small */
+  .navbar.is-sticky + .hero{ scroll-margin-top: 72px; padding-top: 12px; }
+}
+
+/* Phones only: hide heavy video and tighten type slightly */
+@media (max-width: 600px){
+  .bg-video__media, .hero-video{ display: none !important; }
+  .hero h1{ font-size: clamp(1.25rem, 5.2vw, 1.6rem); }
+  .hero p{  font-size: clamp(.95rem, 4vw, 1.05rem); }
+}
+
+/* Safety: sometimes clipping is caused by transforms on parents;
+   remove on very small screens. */
+@media (max-width: 480px){
+  .hero [style*="transform"],
+  .hero .transform,
+  .hero .reveal{ transform: none !important; }
+}
+
+
+/* Phones & tablets only — stop the hero from cropping */
+@media (max-width: 900px){
+  body .hero{                   /* extra specificity */
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    grid-template-rows: auto auto;   /* let content define height */
+  }
+
+  /* Keep video behind, content above */
+  .hero-video,
+  .bg-video__media{ position:absolute; inset:0; object-fit:cover; z-index:0; }
+  .hero :where(.banner,.hero-card,.intro-card,.hero-icons){ position:relative; z-index:2; }
+
+  /* Make icon row horizontal-scroll so it never gets chopped */
+  .hero-icons{
+    display:flex; flex-wrap:nowrap; overflow-x:auto; gap:14px; padding-inline:8px;
+    scrollbar-width:none;
+  }
+  .hero-icons::-webkit-scrollbar{ display:none; }
+}
+@media (max-width: 600px){
+  .hero-video, .bg-video__media{ display:none !important; } /* phones only */
+}
+
+
+@media (max-width: 480px){
+  .hero [style*="transform"], .hero .transform{ transform:none !important; }
+}
+
+
+/* --- Fix: hero clipping comes from the .section-card wrapper --- */
+@media (max-width: 900px){
+  /* stop the crop + let height grow naturally */
+  .section-card{
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    clip-path: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+  }
+
+  /* keep video behind and fully covering */
+  .section-card > .bg-video__media,
+  .section-card > .hero-video{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    display: block; /* visible on tablets */
+  }
+
+  /* content above the video */
+  .section-card .banner,
+  .section-card .hero-card,
+  .section-card .intro-card,
+  .section-card .hero-icons{
+    position: relative;
+    z-index: 2;
+  }
+
+  /* icons as a non-wrapping, scrollable strip so they never get chopped */
+  .section-card .hero-icons{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 14px;
+    padding: 6px 8px;
+    scrollbar-width: none;
+  }
+  .section-card .hero-icons::-webkit-scrollbar{ display: none; }
+  .section-card .ic{ flex: 0 0 auto; width: 120px; }
+  .section-card .ic .circle{ width: 52px; height: 52px; }
+}
+
+/* phones only: hide heavy video */
+@media (max-width: 600px){
+  .section-card > .bg-video__media,
+  .section-card > .hero-video{ display: none !important; }
+}
+
+
+/* ---- Safety: never allow horizontal scrolling on phones/tablets ---- */
+@media (max-width: 900px){
+  html, body{ overflow-x: hidden; }
+}
+
+/* ───────── Navbar: keep the Resume button inside ───────── */
+@media (max-width: 900px){
+  .navbar{ display:flex; flex-wrap: wrap; gap: 10px; }
+
+  /* let links line-wrap, but keep logo + button stable */
+  .navbar .navlinks{ flex: 1 1 auto; min-width: 0; flex-wrap: wrap; }
+  .navbar .logo, .navbar .brand{ flex: 0 0 auto; }
+
+  /* resume button: don’t shrink, don’t push overflow */
+  .navbar .resume, .navbar .btn-resume, .navbar .cta, .navbar .button{
+    flex: 0 0 auto;
+    margin-left: auto;            /* stays at the right on one line */
+  }
+
+  /* if space is too tight, drop the button onto its own line cleanly */
+  @media (max-width: 700px){
+    .navbar .resume, .navbar .btn-resume, .navbar .cta, .navbar .button{
+      order: 3;                    /* logo=1, links=2, button=3 */
+      margin-left: 0;
+    }
+    .navbar .navlinks{ order: 2; width: 100%; justify-content: center; }
+  }
+}
+
+/* ───────── Hero banner: stop the card from sticking out ───────── */
+:root{ --phone-side-pad: clamp(14px, 4vw, 28px); }
+
+@media (max-width: 900px){
+  /* make the hero container define safe side gutters */
+  .section-card{ padding-inline: var(--phone-side-pad); }
+
+  /* 1) card width may be set via fixed width/negative margins/transform—neutralize */
+  .hero .banner, .hero-card, .intro-card{
+    max-width: 100%;
+    width: auto;
+    margin-inline: 0;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;     /* kills translateX that causes overflow */
+    box-sizing: border-box;
+  }
+
+  /* 2) single-column hero so the card + icons don’t fight for width */
+  .hero-main{
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  /* 3) icons: non-wrapping, horizontal scroll (prevents edge clipping) */
+  .hero-icons{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 14px;
+    padding-inline: 6px;
+    scrollbar-width: none;
+  }
+  .hero-icons::-webkit-scrollbar{ display: none; }
+  .ic{ flex: 0 0 auto; width: 120px; }
+  .ic .circle{ width: 52px; height: 52px; }
+}
+
+/* Phones: hide heavy video only here */
+@media (max-width: 600px){
+  .hero-video, .bg-video__media{ display: none !important; }
+}
+
+
+/* ========== Hero banner overflow fix (tablets/phones only) ========== */
+@media (max-width: 900px){
+  /* The rounded hero wrapper can stay; we just constrain the banner itself */
+  .hero .banner,
+  .hero-card,
+  .intro-card{
+    position: relative;
+    box-sizing: border-box;
+    max-width: 92vw;          /* never wider than the viewport */
+    width: 100%;              /* fill available space */
+    margin: 0 auto;           /* center it */
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;   /* kill any translate that pushes it out */
+    padding: clamp(14px, 4vw, 24px);
+    border-radius: 18px;
+  }
+
+  /* Text sizes that won’t blow the card wider than the screen */
+  .hero .banner h1{ font-size: clamp(1.2rem, 5vw, 1.6rem); line-height: 1.2; }
+  .hero .banner p{  font-size: clamp(.95rem, 3.8vw, 1.05rem); }
+
+  /* Buttons row: allow wrapping so two CTAs don't force overflow */
+  .hero .banner .btn-row,
+  .hero .banner .buttons{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .hero .banner .btn,
+  .hero .banner a.button{
+    flex: 0 0 auto;           /* don't stretch weirdly */
+    min-width: min(48%, 240px);
+  }
+}
+
+/* Phones: a touch smaller + extra side gutters */
+@media (max-width: 600px){
+  .hero .banner{
+    max-width: 94vw;
+    padding: clamp(12px, 5vw, 18px);
+  }
+}
+
+/* ===== Fix hero overflow on tablets/phones ONLY ===== */
+
+/* Stack hero before the combined min-width starts breaking it */
+@media (max-width: 1040px){
+  .hero-main{
+    grid-template-columns: 1fr !important;   /* kill the 540+420 / 520+520 mins */
+    gap: 20px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Let the section grow; stop clipping */
+  .hero{
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    grid-template-rows: auto auto !important;
+  }
+
+  /* Keep the banner inside the viewport */
+  .hero .hero-pane,
+  .hero .banner,
+  .hero-card,
+  .intro-card{
+    max-width: 90% !important;
+    width: auto !important;
+    margin-inline: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Icon row: single horizontal strip that can't be clipped */
+  .hero-icons{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 14px;
+    padding-inline: 8px;
+    scrollbar-width: none;
+    margin-left: -25px
+  }
+  .hero-icons::-webkit-scrollbar{ display:none; }
+  .hero-icons .ic{ flex: 0 0 auto; width: 120px; }
+  .hero-icons .ic .circle{ width: 52px; height: 52px; }
+}
+
+/* Keep video ON for tablets; hide only on phones */
+@media (max-width: 600px){
+  .hero-video, .bg-video__media{ display: none !important; }
+}
+
+
+/* ===== Mobile header centering (phones only) ===== */
+@media (max-width: 1040px){
+  /* Stack header items and center them */
+  .navbar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Your name/logo */
+  .navbar .brand,
+  .navbar .logo,
+  .navbar .site-title{
+    margin: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Center the Download Resume button */
+  .navbar .resume,
+  .navbar .btn-resume,
+  .navbar .cta,
+  .navbar .button{
+    position: static !important;   /* in case it was absolutely positioned */
+    margin: 0 auto;                /* center */
+    flex: 0 0 auto;                /* don't stretch weirdly */
+  }
+
+  /* Optional: center the nav links row too */
+  .navbar .navlinks{
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+
+/* ===== Mobile header centering (phones only) ===== */
+@media (max-width: 600px){
+  /* Stack header items and center them */
+  .navbar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* Your name/logo */
+  .navbar .brand,
+  .navbar .logo,
+  .navbar .site-title{
+    margin: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  /* Center the Download Resume button */
+  .navbar .resume,
+  .navbar .btn-resume,
+  .navbar .cta,
+  .navbar .button{
+    position: static !important;   /* in case it was absolutely positioned */
+    margin: 0 auto;                /* center */
+    flex: 0 0 auto;                /* don't stretch weirdly */
+  }
+
+  /* Optional: center the nav links row too */
+  .navbar .navlinks{
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+
+/* Stack hero before the combined min-width starts breaking it */
+@media (max-width: 600px){
+  .hero-main{
+    grid-template-columns: 1fr !important;   /* kill the 540+420 / 520+520 mins */
+    gap: 20px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Let the section grow; stop clipping */
+  .hero{
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    grid-template-rows: auto auto !important;
+  }
+
+  /* Keep the banner inside the viewport */
+  .hero .hero-pane,
+  .hero .banner,
+  .hero-card,
+  .intro-card{
+    max-width: 90% !important;
+    width: auto !important;
+    margin-inline: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Icon row: single horizontal strip that can't be clipped */
+  .hero-icons{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 14px;
+    padding-inline: 8px;
+    scrollbar-width: none;
+    margin-left: -25px
+  }
+  .hero-icons::-webkit-scrollbar{ display:none; }
+  .hero-icons .ic{ flex: 0 0 auto; width: 120px; }
+  .hero-icons .ic .circle{ width: 52px; height: 52px; }
+}
+
+/* Keep video ON for tablets; hide only on phones */
+@media (max-width: 600px){
+  .hero-video, .bg-video__media{ display: none !important; }
+}
+
+
+
+/* =======================
+   ABOUT — small-screen only
+   (laptops unchanged)
+   ======================= */
+
+/* 1) Prevent the rounded card from clipping & keep bg video behind */
+@media (max-width: 900px){
+  #about.section-card{
+    overflow: visible !important;
+    min-height: auto !important;
+    height: auto !important;
+    clip-path: none !important;
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    padding-inline: clamp(14px, 4vw, 28px);
+    padding-bottom: clamp(18px, 4vw, 32px);
+    position: relative;
+  }
+  #about > .about-bg,
+  #about > .bg-video__media{
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; z-index: 0; display: block;
+  }
+  /* content above video */
+  #about *{ position: relative; z-index: 2; }
+}
+@media (max-width: 600px){
+  #about > .about-bg,
+  #about > .bg-video__media{ display: none !important; }
+}
+
+/* 2) Grid → single column; center portrait; comfy text width  */
+@media (max-width: 1040px){
+  /* your code uses either .about-grid or .a-grid; cover both */
+  #about .about-grid,
+  #about .a-grid,
+  #about [class*="about"][class*="grid"]{
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    align-items: start !important;
+  }
+
+  /* left column (portrait / ring) */
+  #about .about-left,
+  #about .about-media,
+  #about .a-grid > :first-child{
+    justify-self: center !important;
+    text-align: center;
+  }
+
+  /* portrait sizing */
+  #about .about-portrait,
+  #about .avatar,
+  #about .about-left img,
+  #about .a-grid img{
+    width: min(280px, 62vw);
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+  }
+
+  /* right column (copy) */
+  #about .about-copy,
+  #about .about-right,
+  #about .a-grid > :nth-child(2){
+    max-width: 62ch;
+    margin-inline: auto;
+  }
+
+  /* chips / links row */
+  #about .about-links,
+  #about .pills,
+  #about .chips{
+    display: flex; flex-wrap: wrap; gap: 10px 12px;
+    justify-content: center;
+  }
+  #about .chip{ min-height: 40px; }
+}
+
+/* 3) Tiny phones polish */
+@media (max-width: 420px){
+  #about h2{ font-size: clamp(1.1rem, 6vw, 1.35rem); }
+  #about p{  font-size: clamp(.95rem, 4.2vw, 1.05rem); }
+  #about .about-portrait,
+  #about .avatar{ width: min(230px, 70vw); }
+}
+
+/* 4) If your section uses .a-row/.activity cards, make them wrap nicely */
+@media (max-width: 900px){
+  #about .a-row{ display: grid; grid-template-columns: 1fr; gap: 14px; }
+  #about .activity-card{ min-height: 0; }
+}
 
 
 
 
+/* ===== Academics overlap fix + right-docked layout (≤1040px) ===== */
+@media (max-width: 1040px){
+  /* 1) Make sure Academics sits in normal flow and clears the section above */
+  #academics{
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: clamp(18px, 3vw, 28px) !important;  /* push it down a bit */
+    overflow: visible !important;
+  }
+
+  /* If the previous section has a sticky/rounded bottom, give scroll offset */
+  #about{ scroll-margin-bottom: 80px; }
+
+  /* 2) Move the Academics inner content to the RIGHT and reduce width */
+  #academics .a-grid,
+  #academics .section-inner,
+  #academics .container{
+    max-width: 760px;            /* narrower content */
+    margin-left: auto;           /* align to the RIGHT */
+    margin-right: 0;
+  }
+
+  /* 3) Neutralize any absolute/translated items that cause overlap */
+  #academics .a-grid > *,
+  #academics .a-row,
+  #academics .activity-card{
+    position: relative !important;
+    top: auto !important;
+    transform: none !important;
+    margin-left: 3px !important;
+  }
+
+  /* 4) Ensure the academics header band doesn't float over the section above */
+  #academics .section-head{
+    position: relative;
+    z-index: 2;
+    padding-inline: clamp(12px, 3vw, 20px);
+  }
+
+  /* 5) Keep any background video/ink behind content so it can't cover cards */
+  #academics > .bg-video__media{
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    z-index: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Phones: if the visual is heavy, hide it */
+@media (max-width: 600px){
+  #academics > .bg-video__media{ display: none !important; }
+}
+
+ #academics .a-row{
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    justify-items: end !important;   /* children can sit on the right edge */
+  }
+
+  /* The card itself: fixed comfy width and dock to the right */
+  #academics .activity-card{
+    width: min(760px, 94vw) !important;  /* reduce width a bit */
+    justify-self: end !important;        /* grid: push to right */
+    margin-left: auto !important;        /* fallback if parent becomes flex */
+    transform: none !important;          /* kill any translate keeping it left */
+  }
+
+  /* If a left “rail/timeline” is part of the same row, keep it from forcing space */
+  #academics .rail, 
+  #academics .timeline{ display: none !important; }
 
 
 
+  /* ===== Corporate timeline: remove center rail & simplify layout (≤1040px) ===== */
+@media (max-width: 1040px){
+
+  /* 1) Hide the vertical rail itself (covers the common ways it's drawn) */
+  #corporate .corp-card > header{ align-items: center; text-align: center; }
+  #corporate .corp-tl::before,
+  #work-timeline::before,
+  #corporate .corp-item::before{
+    content: none !important;
+    display: none !important;
+    border: 0 !important;
+    background: none !important;
+  }
+
+  /* If the rail is drawn as a border on the list */
+  #corporate .corp-tl,
+  #work-timeline{
+    background: none !important;
+    border: 0 !important;
+  }
+
+  /* 2) Hide the round “dot” markers */
+  #corporate .corp-item > .dot{ display: none !important; }
+
+  /* 3) Make the alternating left/right cards become a single column */
+  #corporate .corp-tl{ display: grid; grid-template-columns: 1fr; gap: 14px; }
+  #corporate .corp-card{ width: 100% !important; max-width: 90% !important; }
+
+  /* Remove any positioning reserved for the rail/alternation */
+  #corporate .corp-card.left,
+  #corporate .corp-card.right{
+    float: none !important;
+    transform: none !important;
+    left: auto !important; right: auto !important;
+    margin-left: 0 !important; margin-right: 0 !important;
+  }
+
+  /* Clear any extra padding that made room for the rail */
+  #corporate .corp-item,
+  #corporate .corp-card{
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  #corporate .corp-points{ width: 90% !important; 
+    max-width: 90% !important; 
+  margin-inline: auto;        /* <-- centers the 90%-wide block */
+  padding-left: 0;
+}
+}
 
 
 
+  
 
-
-
-
-
-
-
-
+  
 
 
 
