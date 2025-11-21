@@ -74,6 +74,5 @@ document.querySelectorAll('.reveal-on-scroll').forEach(el => revealIO.observe(el
 
 
 // Year
-const yearEl = document.getElementById('year');
-if (yearEl) yearEl.textContent = new Date().getFullYear();
+document.getElementById('year')?.textContent = new Date().getFullYear();
 
